@@ -1,26 +1,32 @@
 {
   "expo": {
-    "name": "todo-native",
-    "slug": "todo-native",
+    "name": "Todo List",
+    "slug": "bh-todo-app",
     "version": "1.0.0",
+    "sdkVersion": "38.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/homework.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/homework.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/homework.png"
+    },
+    "android": {
+      "package": "com.bihan.todo",
+      "versionCode": 1,
+      "permissions": [],
+      "icon": "./assets/homework.png"
+    },
+    "description": "Todo List to keep track of your future plans and activities."
   }
 }
