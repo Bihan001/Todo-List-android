@@ -5,9 +5,9 @@
     "version": "1.0.0",
     "sdkVersion": "38.0.0",
     "orientation": "portrait",
-    "icon": "./assets/homework.png",
+    "icon": "./assets/todo.png",
     "splash": {
-      "image": "./assets/homework.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,13 +19,14 @@
       "supportsTablet": true
     },
     "web": {
-      "favicon": "./assets/homework.png"
+      "favicon": "./assets/todo.png"
     },
     "android": {
       "package": "com.bihan.todo",
       "versionCode": 1,
       "permissions": [],
-      "icon": "./assets/homework.png"
+      "icon": "./assets/todo.png",
+      "enableDangerousExperimentalLeanBuilds": true
     },
     "description": "Todo List to keep track of your future plans and activities."
   }

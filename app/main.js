@@ -60,12 +60,15 @@ const Main = () => {
     }
   }, [user]);
 
+  const deleteList = (list_id) =>
+    firebase.firestore().collection('users').doc(user.uid).collection('lists').doc(list_id).delete();
+
   const updateList = (item) =>
     firebase.firestore().collection('users').doc(user.uid).collection('lists').doc(item.id).update(item);
 
   const toggleAddTodoVisibility = () => setAddTodoVisibility(!addTodoVisible);
 
-  const renderList = (list) => <TodoList list={list} updateList={updateList} />;
+  const renderList = (list) => <TodoList list={list} updateList={updateList} deleteList={deleteList} />;
 
   const addList = (item) => {
     firebase
@@ -105,9 +108,11 @@ const Main = () => {
 
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.divider}></View>
-        <Text style={{ fontSize: 40, paddingHorizontal: 20 }}>
-          TODO<Text style={styles.title}>LIST</Text>
-        </Text>
+        <TouchableOpacity>
+          <Text style={{ fontSize: 40, paddingHorizontal: 20 }}>
+            TODO<Text style={styles.title}>LIST</Text>
+          </Text>
+        </TouchableOpacity>
         <View style={styles.divider}></View>
       </View>
 
@@ -157,6 +162,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 5,
   },
   add: {
     marginTop: 8,

@@ -29,7 +29,10 @@ const AddListModal = ({ closeModal, addList }) => {
   };
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={{ position: 'absolute', top: 32, right: 32 }} onPress={() => closeModal()}>
+      <TouchableOpacity
+        style={{ position: 'absolute', top: 32, right: 32 }}
+        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+        onPress={() => closeModal()}>
         <AntDesign name='close' size={24} color='#000' />
       </TouchableOpacity>
 
@@ -39,7 +42,9 @@ const AddListModal = ({ closeModal, addList }) => {
           required
           style={[styles.input, { borderColor: !error ? currentColor : 'red' }]}
           placeholder='List Name?'
+          value={listName}
           onChangeText={(text) => handleTextChange(text)}
+          onSubmitEditing={() => createTodo()}
         />
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>{renderColors()}</View>

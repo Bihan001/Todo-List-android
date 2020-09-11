@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, TextInput, Keyboard } from 'react-native';
+import Modal from 'react-native-modal';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 const TodoModal = ({ list, closeModal, updateList }) => {
   const [todo, setTodo] = useState('');
+  const [editText, setEditText] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const taskCount = list.todos.length;
   const completedCount = list.todos.filter((todo) => todo.completed).length;
+
+  const toggleEditModalVisibility = () => {
+    setShowEditModal(!showEditModal);
+  };
 
   const toggleTodoCompleted = (index) => {
     let tmpList = list;
@@ -22,7 +30,16 @@ const TodoModal = ({ list, closeModal, updateList }) => {
       updateList(tmpList);
     }
     setTodo('');
-    Keyboard.dismiss();
+  };
+
+  const editTodo = (index) => {
+    let tmpList = list;
+    if (!tmpList.todos.some((t) => t.title === editText) && editText.trim()) {
+      tmpList.todos[index].title = editText;
+      updateList(tmpList);
+    }
+    setEditText('');
+    toggleEditModalVisibility();
   };
 
   const renderTodo = (todo, index) => (
@@ -51,7 +68,59 @@ const TodoModal = ({ list, closeModal, updateList }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={{ position: 'absolute', top: 32, right: 32, zIndex: 10 }} onPress={() => closeModal()}>
+      <Modal
+        isVisible={showEditModal}
+        backdropOpacity={0.6}
+        avoidKeyboard={true}
+        animationIn='fadeInUpBig'
+        animationOut='fadeOutDownBig'
+        swipeDirection={['down', 'left', 'right', 'up']}
+        backdropTransitionOutTiming={0}
+        onBackButtonPress={toggleEditModalVisibility}
+        onBackdropPress={toggleEditModalVisibility}
+        onSwipeComplete={toggleEditModalVisibility}
+        style={{ margin: 0, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{
+            backgroundColor: '#ffffff',
+            paddingVertical: 40,
+            paddingHorizontal: 40,
+            marginHorizontal: 20,
+            borderRadius: 6,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <TextInput
+              value={editText}
+              onChangeText={(text) => setEditText(text)}
+              onSubmitEditing={() => editTodo(selectedIndex)}
+              placeholder='Edit Todo'
+              style={{
+                borderColor: list.color,
+                borderWidth: 0.5,
+                height: 48,
+                width: 200,
+                borderRadius: 6,
+                paddingLeft: 10,
+                marginRight: 5,
+              }}
+            />
+            <TouchableOpacity
+              style={{ padding: 14, borderRadius: 4, backgroundColor: list.color }}
+              onPress={() => editTodo(selectedIndex)}>
+              <AntDesign name='check' size={22} color='white' />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <TouchableOpacity
+        style={{ position: 'absolute', top: 32, right: 32, zIndex: 10 }}
+        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+        onPress={() => closeModal()}>
         <AntDesign name='close' size={24} color='#000' />
       </TouchableOpacity>
 
@@ -71,6 +140,12 @@ const TodoModal = ({ list, closeModal, updateList }) => {
           contentContainerStyle={{ paddingHorizontal: 32, paddingVertical: 64 }}
           showsVerticalScrollIndicator={false}
         /> */}
+        {list.todos.length < 1 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+            <Text style={{ color: '#888', fontSize: 16, paddingBottom: 2 }}>Create a new Todo below.</Text>
+            <Text style={{ color: '#888', fontSize: 16 }}>Note: Swipe a todo to edit or delete it!</Text>
+          </View>
+        ) : null}
         <SwipeListView
           useFlatList={true}
           data={list.todos}
@@ -79,15 +154,44 @@ const TodoModal = ({ list, closeModal, updateList }) => {
           contentContainerStyle={{ paddingHorizontal: 32, paddingVertical: 64 }}
           renderItem={(rowData, rowMap) => renderTodo(rowData.item, rowData.index)}
           renderHiddenItem={(rowData, rowMap) => (
-            <View style={{ position: 'absolute', top: 0, right: 0, alignItems: 'center', flex: 1 }}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                alignItems: 'center',
+                flex: 1,
+                flexDirection: 'row',
+              }}>
               <TouchableOpacity
-                style={{ backgroundColor: list.color, paddingHorizontal: 18, paddingVertical: 16, borderRadius: 4 }}
+                style={{
+                  backgroundColor: list.color,
+                  paddingHorizontal: 18,
+                  paddingVertical: 16,
+                  borderTopLeftRadius: 4,
+                  borderBottomLeftRadius: 4,
+                }}
+                onPress={() => {
+                  toggleEditModalVisibility();
+                  setSelectedIndex(rowData.index);
+                  setEditText(list.todos[rowData.index].title);
+                }}>
+                <AntDesign name='edit' size={20} color='#fff' />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#F73345',
+                  paddingHorizontal: 18,
+                  paddingVertical: 16,
+                  borderTopRightRadius: 4,
+                  borderBottomRightRadius: 4,
+                }}
                 onPress={() => deleteTodo(rowData.index)}>
                 <AntDesign name='delete' size={20} color='#fff' />
               </TouchableOpacity>
             </View>
           )}
-          rightOpenValue={-66}
+          rightOpenValue={-115}
         />
       </View>
       <KeyboardAvoidingView style={[styles.section, styles.footer]}>
@@ -96,6 +200,7 @@ const TodoModal = ({ list, closeModal, updateList }) => {
           placeholder='Add Todo'
           onChangeText={(text) => setTodo(text)}
           value={todo}
+          onSubmitEditing={() => addTodo()}
         />
         <TouchableOpacity style={[styles.addTodo, { backgroundColor: list.color }]} onPress={() => addTodo()}>
           <AntDesign name='plus' size={16} color='white' />
@@ -161,6 +266,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
+    paddingLeft: 18,
   },
   todo: {
     fontSize: 16,

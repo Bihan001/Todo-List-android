@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign } from '@expo/vector-icons';
 import TodoModal from './todo_modal';
 
-const TodoList = ({ list, updateList }) => {
+const TodoList = ({ list, updateList, deleteList }) => {
   const [showListVisible, setShowListVisibility] = useState(false);
   const toggleListModal = () => {
     setShowListVisibility(!showListVisible);
@@ -15,8 +16,6 @@ const TodoList = ({ list, updateList }) => {
     <View>
       <Modal
         isVisible={showListVisible}
-        animationIn='fadeInUpBig'
-        animationOut='fadeOutDownBig'
         onSwipeComplete={toggleListModal}
         onBackButtonPress={toggleListModal}
         onBackdropPress={toggleListModal}
@@ -35,12 +34,20 @@ const TodoList = ({ list, updateList }) => {
           width: 200,
           backgroundColor: '#ddd',
         }}>
+        <TouchableOpacity
+          onPress={() => deleteList(list.id)}
+          style={{ position: 'absolute', bottom: 7, right: 5, zIndex: 100 }}
+          hitSlop={{ top: 10, bottom: 20, left: 10, right: 20 }}>
+          <AntDesign name='delete' size={20} color='#888' />
+        </TouchableOpacity>
         <LinearGradient
           style={[styles.listContainer]}
           colors={[list.color, list.color.slice(0, 3) + 'aaaa']}
           start={{ x: 0.0, y: 0 }}
           end={{ x: 1, y: 1.0 }}>
-          <TouchableOpacity onPress={() => toggleListModal()}>
+          <TouchableOpacity
+            style={{ paddingVertical: 32, paddingHorizontal: 16, alignSelf: 'stretch', alignItems: 'center' }}
+            onPress={() => toggleListModal()}>
             <Text style={styles.listTitle} numberOfLines={1}>
               {list.name}
             </Text>
@@ -65,10 +72,8 @@ export default TodoList;
 
 const styles = StyleSheet.create({
   listContainer: {
-    paddingVertical: 32,
-    paddingHorizontal: 16,
     borderRadius: 6,
-    borderBottomEndRadius: 78,
+    borderBottomEndRadius: 90,
     overflow: 'hidden',
     alignItems: 'center',
     width: 200,
